@@ -43,6 +43,13 @@ export const TaskItem: React.FC<TaskItemProps> = ({
 
   const displayAuthor = task.authorUsername ? task.authorUsername : (task.authorEmail || 'Anonymous');
 
+  const isCreator = Boolean(
+    (userId && (task.userId === userId || task.userId === String(userId))) ||
+      task.userId === userEmail ||
+      task.authorEmail === userEmail ||
+      (username && (task.userId === username || task.authorUsername === username))
+  );
+
   return (
     <div className="task-item">
       <div className="task-header">
@@ -74,13 +81,15 @@ export const TaskItem: React.FC<TaskItemProps> = ({
           >
             {isLiked ? '♥' : '♡'} {likesCount}
           </button>
-          <button
-            className="btn btn-danger"
-            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-            onClick={() => onDeleteTask(task.id)}
-          >
-            Delete
-          </button>
+          {isCreator && (
+            <button
+              className="btn btn-danger"
+              style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+              onClick={() => onDeleteTask(task.id)}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
 

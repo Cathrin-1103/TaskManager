@@ -33,7 +33,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    let parsedDueDate: Date | undefined = undefined;
+    let parsedDueDate: Date;
     if (dueDate) {
       const d = new Date(dueDate);
       if (isNaN(d.getTime())) {
@@ -41,6 +41,8 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
         return;
       }
       parsedDueDate = d;
+    } else {
+      parsedDueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     }
 
     const newTask = new TaskModel({

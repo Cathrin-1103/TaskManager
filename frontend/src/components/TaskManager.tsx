@@ -14,10 +14,16 @@ interface TaskManagerProps {
   onLogout: () => void;
 }
 
+const getDefaultDueDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d.toISOString().split('T')[0];
+};
+
 export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, username, userId, onLogout }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState<string>('');
-  const [newDueDate, setNewDueDate] = useState<string>('');
+  const [newDueDate, setNewDueDate] = useState<string>(getDefaultDueDate());
 
   const [titleTouched, setTitleTouched] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>('');
@@ -75,19 +81,24 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       return;
     }
 
+    if (!newDueDate) {
+      setFormError('Please select a due date for the task.');
+      return;
+    }
+
     try {
       const res = await fetchAuth('/tasks', {
         method: 'POST',
         body: JSON.stringify({
           title: newTitle.trim(),
-          dueDate: newDueDate ? new Date(newDueDate).toISOString() : undefined,
+          dueDate: new Date(newDueDate).toISOString(),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to create task');
 
       setNewTitle('');
-      setNewDueDate('');
+      setNewDueDate(getDefaultDueDate());
       setTitleTouched(false);
       loadTasks();
     } catch (err: any) {

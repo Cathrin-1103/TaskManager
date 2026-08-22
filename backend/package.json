@@ -1,0 +1,37 @@
+{
+  "name": "node-task-backend",
+  "version": "1.0.0",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts",
+    "seed": "tsx src/seed.ts",
+    "test": "jest --detectOpenHandles"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.9.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.4",
+    "@types/supertest": "^7.2.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.12",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

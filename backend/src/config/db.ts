@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
+import dns from "dns";
 import { config } from "./index";
+
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (_e) {}
 
 async function migrateCollectionToNumericIds(collectionName: string): Promise<void> {
   try {

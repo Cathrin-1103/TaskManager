@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import dns from "dns";
 import { User } from "./models/User";
 import { TaskModel } from "./models/Task";
 import { config } from "./config";
+
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (_e) {}
 
 export async function seedDatabase() {
   try {

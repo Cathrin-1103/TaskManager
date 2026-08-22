@@ -18,7 +18,6 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
   username = username.trim();
   email = email.trim().toLowerCase();
-  password = password.trim();
 
   if (username.length < 3) {
     res.status(400).json({ message: "Username must be at least 3 characters" });
@@ -61,11 +60,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 
   const trimmedEmail = userEmail.trim().toLowerCase();
-  const trimmedPassword = password.trim();
 
   const user = await User.findOne({ email: trimmedEmail });
 
-  if (!user || !(await bcrypt.compare(trimmedPassword, user.passwordHash))) {
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     res.status(401).json({ message: "Invalid email or password" });
     return;
   }
@@ -88,6 +86,9 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     user.refreshTokens = [];
   }
   user.refreshTokens.push(refreshToken);
+  if (user.refreshTokens.length > 5) {
+    user.refreshTokens = user.refreshTokens.slice(-5);
+  }
   await user.save();
 
   res.json({ token: accessToken, refreshToken, username: user.username, email: user.email, userId: user._id.toString() });

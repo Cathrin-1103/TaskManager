@@ -63,13 +63,23 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
 
 export const updateTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    const userId = req.user?.id || req.user?.email;
+    if (!userId) {
+      res.status(401).json({ message: "User identity missing from token" });
+      return;
+    }
+
     const taskId = Number(req.params.id);
     const { title, done, dueDate } = req.body;
-
     const task = await TaskModel.findById(taskId);
 
     if (!task) {
       res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    if (task.userId !== userId) {
+      res.status(403).json({ message: "You are not authorized to modify this task" });
       return;
     }
 
@@ -107,13 +117,26 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
 
 export const deleteTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    const userId = req.user?.id || req.user?.email;
+    if (!userId) {
+      res.status(401).json({ message: "User identity missing from token" });
+      return;
+    }
+
     const taskId = Number(req.params.id);
-    const task = await TaskModel.findByIdAndDelete(taskId);
+    const task = await TaskModel.findById(taskId);
 
     if (!task) {
       res.status(404).json({ message: "Task not found" });
       return;
     }
+
+    if (task.userId !== userId) {
+      res.status(403).json({ message: "You are not authorized to modify this task" });
+      return;
+    }
+
+    await TaskModel.findByIdAndDelete(taskId);
 
     res.json({ message: "Task deleted successfully" });
   } catch (error) {

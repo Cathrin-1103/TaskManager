@@ -78,6 +78,42 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
       expect(res.body).toHaveProperty('username', 'test_user');
     });
 
+    it('should cap refreshTokens array at maximum 5 tokens', async () => {
+      for (let i = 0; i < 6; i++) {
+        await request(app)
+          .post('/auth/login')
+          .send({ email: testUser.email, password: testUser.password });
+      }
+
+      const dbUser = await User.findOne({ email: testUser.email });
+      expect(dbUser).toBeDefined();
+      expect(dbUser?.refreshTokens.length).toBeLessThanOrEqual(5);
+    });
+
+    it('should preserve password whitespace and return 401 when whitespace is omitted', async () => {
+      const spaceUser = {
+        username: 'space_user',
+        email: `space_${Date.now()}@test.com`,
+        password: ' Password123! ',
+      };
+
+      const regRes = await request(app).post('/auth/register').send(spaceUser);
+      expect(regRes.status).toBe(201);
+
+      const loginSuccess = await request(app).post('/auth/login').send({
+        email: spaceUser.email,
+        password: ' Password123! ',
+      });
+      expect(loginSuccess.status).toBe(200);
+      expect(loginSuccess.body).toHaveProperty('token');
+
+      const loginFail = await request(app).post('/auth/login').send({
+        email: spaceUser.email,
+        password: 'Password123!',
+      });
+      expect(loginFail.status).toBe(401);
+    });
+
     it('should return 401 for incorrect password', async () => {
       const res = await request(app)
         .post('/auth/login')

@@ -92,7 +92,17 @@ describe('Task Endpoints (/tasks)', () => {
   });
 
   describe('PUT /tasks/:id', () => {
-    it('should update task status to done by User A', async () => {
+    it('should return 403 Forbidden if User B attempts to edit User A task', async () => {
+      const res = await request(app)
+        .put(`/tasks/${createdTaskId}`)
+        .set('Authorization', `Bearer ${tokenB}`)
+        .send({ done: true });
+
+      expect(res.status).toBe(403);
+      expect(res.body).toHaveProperty('message', 'You are not authorized to modify this task');
+    });
+
+    it('should update task status to done by User A (the task creator)', async () => {
       const res = await request(app)
         .put(`/tasks/${createdTaskId}`)
         .set('Authorization', `Bearer ${tokenA}`)
@@ -151,6 +161,15 @@ describe('Task Endpoints (/tasks)', () => {
   });
 
   describe('DELETE /tasks/:id', () => {
+    it('should return 403 Forbidden if User B attempts to delete User A task', async () => {
+      const res = await request(app)
+        .delete(`/tasks/${createdTaskId}`)
+        .set('Authorization', `Bearer ${tokenB}`);
+
+      expect(res.status).toBe(403);
+      expect(res.body).toHaveProperty('message', 'You are not authorized to modify this task');
+    });
+
     it('should allow User A to delete their own task', async () => {
       const res = await request(app)
         .delete(`/tasks/${createdTaskId}`)

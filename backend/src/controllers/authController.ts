@@ -78,14 +78,15 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     { expiresIn: config.refreshTokenExpiry as any }
   );
 
-  if (!user.refreshTokens) {
-    user.refreshTokens = [];
-  }
-  user.refreshTokens.push(refreshToken);
-  if (user.refreshTokens.length > 5) {
-    user.refreshTokens = user.refreshTokens.slice(-5);
-  }
-  await user.save();
+  // Atomic push and slice to prevent VersionError race conditions
+  await User.findByIdAndUpdate(user._id, {
+    $push: {
+      refreshTokens: {
+        $each: [refreshToken],
+        $slice: -5,
+      },
+    },
+  });
 
   res.json({ token, refreshToken, username: user.username, email: user.email, userId: user._id.toString() });
 };

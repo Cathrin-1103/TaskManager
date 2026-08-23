@@ -18,7 +18,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Real-time error calculations while typing
   const usernameError = (!isLoginMode && touched.username) ? validateUsername(username) : '';
   const emailError = touched.email ? validateEmail(email) : '';
   const passwordError = touched.password ? validatePassword(password) : '';
@@ -49,7 +48,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
 
     setTouched({ username: true, email: true, password: true });
 
-    // Validate email and password regex rules (and username for registration)
     const eErr = validateEmail(email);
     const pErr = validatePassword(password);
     const uErr = !isLoginMode ? validateUsername(username) : '';

@@ -7,7 +7,7 @@
     "build": "echo Backend build complete",
     "start": "npx tsx src/server.ts",
     "seed": "npx tsx src/seed.ts",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",

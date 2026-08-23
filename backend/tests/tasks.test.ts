@@ -15,13 +15,10 @@ describe('Task Endpoints (/tasks)', () => {
 
   beforeAll(async () => {
     await connectTestDB();
-
-    // Register & login User A (Login using email & password)
     await request(app).post('/auth/register').send(userA);
     const loginA = await request(app).post('/auth/login').send({ email: userA.email, password: userA.password });
     tokenA = loginA.body.token;
 
-    // Register & login User B (Login using email & password)
     await request(app).post('/auth/register').send(userB);
     const loginB = await request(app).post('/auth/login').send({ email: userB.email, password: userB.password });
     tokenB = loginB.body.token;

@@ -10,7 +10,6 @@ export const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   let { username, email, password } = req.body;
 
-  // Strict type checking and trimming
   if (!username || typeof username !== "string" || !email || typeof email !== "string" || !password || typeof password !== "string") {
     res.status(400).json({ message: "Username, email, and password are required" });
     return;
@@ -24,19 +23,16 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     return;
   }
 
-  // Email regex validation
   if (!EMAIL_REGEX.test(email)) {
     res.status(400).json({ message: "Valid email address is required (e.g. user@example.com)" });
     return;
   }
 
-  // Password regex validation
   if (!PASSWORD_REGEX.test(password)) {
     res.status(400).json({ message: "Password must be at least 6 characters, contain letters & numbers, and include at least 1 special character" });
     return;
   }
 
-  // Check for duplicate email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     res.status(400).json({ message: "Email already registered" });
@@ -52,7 +48,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   let { email, username, password } = req.body;
-  const userEmail = email || username; // Accepts email (or identifier) for login
+  const userEmail = email || username;
 
   if (!userEmail || typeof userEmail !== "string" || !password || typeof password !== "string") {
     res.status(400).json({ message: "Email and password required" });
@@ -70,7 +66,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
   const payload = { id: user._id.toString(), email: user.email, username: user.username };
 
-  const accessToken = jwt.sign(
+  const token = jwt.sign(
     payload,
     config.jwtSecret,
     { expiresIn: config.accessTokenExpiry as any }
@@ -91,7 +87,39 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
   await user.save();
 
-  res.json({ token: accessToken, refreshToken, username: user.username, email: user.email, userId: user._id.toString() });
+  res.json({ token, refreshToken, username: user.username, email: user.email, userId: user._id.toString() });
+};
+
+export const refreshTokenUser = async (req: Request, res: Response): Promise<void> => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken || typeof refreshToken !== "string") {
+    res.status(400).json({ message: "Refresh token is required" });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, config.refreshTokenSecret) as {
+      id: string;
+      email: string;
+      username: string;
+    };
+
+    const user = await User.findOne({ email: decoded.email, refreshTokens: refreshToken });
+    if (!user) {
+      res.status(401).json({ message: "Invalid or revoked refresh token" });
+      return;
+    }
+
+    const payload = { id: user._id.toString(), email: user.email, username: user.username };
+    const token = jwt.sign(payload, config.jwtSecret, {
+      expiresIn: config.accessTokenExpiry as any,
+    });
+
+    res.json({ token });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid or expired refresh token" });
+  }
 };
 
 export const logoutUser = async (req: Request, res: Response): Promise<void> => {

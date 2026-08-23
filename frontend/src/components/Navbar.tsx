@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Navbar.css';
 
 interface NavbarProps {
   userEmail: string;
@@ -22,8 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ username, onLogout }) => {
         <div className="avatar">{userInitial}</div>
         <span className="user-name">{username}</span>
         <button
-          className="btn btn-secondary"
-          style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: '9999px' }}
+          className="btn btn-secondary navbar-logout-btn"
           onClick={onLogout}
         >
           Log Out

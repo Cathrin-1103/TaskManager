@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/StatsBar.css';
 
 interface StatsBarProps {
   totalCount: number;
@@ -13,7 +14,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ totalCount, completedCount }
         <div className="stat-label">Total Tasks</div>
       </div>
       <div className="stat-card">
-        <div className="stat-number" style={{ color: '#10b981' }}>{completedCount}</div>
+        <div className="stat-number stat-number-completed">{completedCount}</div>
         <div className="stat-label">Completed</div>
       </div>
     </div>

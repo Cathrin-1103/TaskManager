@@ -124,6 +124,40 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
     });
   });
 
+  describe('POST /auth/refresh', () => {
+    it('should generate a new access token when provided a valid refresh token', async () => {
+      const loginRes = await request(app)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const refreshToken = loginRes.body.refreshToken;
+
+      const refreshRes = await request(app)
+        .post('/auth/refresh')
+        .send({ refreshToken });
+
+      expect(refreshRes.status).toBe(200);
+      expect(refreshRes.body).toHaveProperty('token');
+    });
+
+    it('should return 401 if refresh token has been revoked after logout', async () => {
+      const loginRes = await request(app)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const refreshToken = loginRes.body.refreshToken;
+
+      await request(app).post('/auth/logout').send({ refreshToken });
+
+      const refreshRes = await request(app)
+        .post('/auth/refresh')
+        .send({ refreshToken });
+
+      expect(refreshRes.status).toBe(401);
+      expect(refreshRes.body).toHaveProperty('message', 'Invalid or revoked refresh token');
+    });
+  });
+
   describe('POST /auth/logout', () => {
     it('should successfully log out user and invalidate refresh token', async () => {
       const loginRes = await request(app)

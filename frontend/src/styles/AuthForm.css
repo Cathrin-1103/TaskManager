@@ -1,0 +1,6 @@
+/* Component-Specific CSS: AuthForm */
+.auth-field-error-text {
+  color: #ef4444;
+  font-size: 0.78rem;
+  margin-top: 4px;
+}

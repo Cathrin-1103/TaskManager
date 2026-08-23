@@ -218,6 +218,47 @@ export const swaggerSpec = {
         },
       },
     },
+    "/auth/refresh": {
+      post: {
+        summary: "Refresh access token",
+        description: "Generate a new short-lived Bearer access token using a valid refresh token.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/LogoutInput",
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Token refreshed successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    token: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: "Invalid or expired refresh token",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/MessageResponse",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     "/auth/logout": {
       post: {
         summary: "Logout user",

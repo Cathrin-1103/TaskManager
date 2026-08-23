@@ -1,0 +1,29 @@
+/* Component-Specific CSS: TaskManager */
+.task-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.task-input-title {
+  flex: 1;
+}
+
+.task-input-date {
+  width: 160px;
+  color-scheme: dark;
+}
+
+.task-add-btn {
+  white-space: nowrap;
+}
+
+.task-validation-msg {
+  color: #ef4444;
+  font-size: 0.78rem;
+}

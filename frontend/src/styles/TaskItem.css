@@ -1,0 +1,33 @@
+/* Component-Specific CSS: TaskItem */
+.task-meta-info {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.task-author-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.task-due-date {
+  color: #f97316;
+  font-weight: 600;
+}
+
+.task-due-date-done {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.task-delete-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}

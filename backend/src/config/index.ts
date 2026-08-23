@@ -8,5 +8,5 @@ export const config = {
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET || "myrefreshsecretkey",
   accessTokenExpiry: process.env.ACCESS_TOKEN_EXPIRY || "15m",
   refreshTokenExpiry: process.env.REFRESH_TOKEN_EXPIRY || "7d",
-  mongoUri: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/TaskManager",
+  mongoUri: process.env.MONGO_URI || "mongodb+srv://cathrinrajakumar_db_user:CathrinPass123@cluster0.4s3tup1.mongodb.net/TaskManager?retryWrites=true&w=majority&appName=Cluster0",
 };

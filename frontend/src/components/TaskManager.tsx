@@ -5,6 +5,7 @@ import { StatsBar } from './StatsBar';
 import { TaskItem } from './TaskItem';
 import { validateTaskTitle } from '../utils/validation';
 import { API_BASE_URL } from '../config';
+import '../styles/TaskManager.css';
 
 interface TaskManagerProps {
   token: string;
@@ -195,12 +196,11 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       {error && <div className="alert-error">⚠️ {error}</div>}
       {formError && <div className="alert-error">⚠️ {formError}</div>}
 
-      <form className="task-form" onSubmit={handleAddTask} style={{ flexDirection: 'column', gap: '8px' }}>
-        <div style={{ display: 'flex', gap: '10px' }}>
+      <form className="task-form task-form-vertical" onSubmit={handleAddTask}>
+        <div className="task-form-row">
           <input
             type="text"
-            className={`form-control ${titleError ? 'is-invalid' : ''}`}
-            style={titleError ? { flex: 1, borderColor: '#ef4444' } : { flex: 1 }}
+            className={`form-control task-input-title ${titleError ? 'is-invalid' : ''}`}
             placeholder="What needs to be done?"
             value={newTitle}
             onChange={(e) => {
@@ -211,17 +211,16 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
           />
           <input
             type="date"
-            className="form-control"
+            className="form-control task-input-date"
             title="Select End Date / Due Date"
-            style={{ width: '160px', colorScheme: 'dark' }}
             value={newDueDate}
             onChange={(e) => setNewDueDate(e.target.value)}
           />
-          <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
+          <button type="submit" className="btn btn-primary task-add-btn">
             + Add Task
           </button>
         </div>
-        {titleError && <div style={{ color: '#ef4444', fontSize: '0.78rem' }}>⚠️ {titleError}</div>}
+        {titleError && <div className="task-validation-msg">⚠️ {titleError}</div>}
       </form>
 
       <div className="filter-bar">

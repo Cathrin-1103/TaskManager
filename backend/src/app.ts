@@ -15,13 +15,11 @@ app.use(express.json());
 
 setupSwagger(app);
 
-// Mount Auth routes under /auth (and / for fallback)
 app.use("/auth", authRoutes);
 app.use("/", authRoutes);
 
 app.use("/tasks", taskRoutes);
 
-// Serve static frontend build files if present
 const frontendDistPath = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(frontendDistPath));
 

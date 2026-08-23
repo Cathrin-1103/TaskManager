@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validation';
 import { API_BASE_URL } from '../config';
+import '../styles/AuthForm.css';
 
 interface AuthFormProps {
   onLoginSuccess: (token: string, email: string, username?: string, userId?: string) => void;
@@ -137,13 +138,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
             <input
               type="text"
               className={`form-control ${usernameError ? 'is-invalid' : ''}`}
-              style={usernameError ? { borderColor: '#ef4444' } : {}}
               placeholder="Enter username (e.g. alex_dev)"
               value={username}
               onChange={handleUsernameChange}
               onBlur={() => handleBlur('username')}
             />
-            {usernameError && <div style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px' }}>⚠️ {usernameError}</div>}
+            {usernameError && <div className="auth-field-error-text">⚠️ {usernameError}</div>}
           </div>
         )}
 
@@ -152,13 +152,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
           <input
             type="email"
             className={`form-control ${emailError ? 'is-invalid' : ''}`}
-            style={emailError ? { borderColor: '#ef4444' } : {}}
             placeholder="Enter email (e.g. alex@taskmanager.com)"
             value={email}
             onChange={handleEmailChange}
             onBlur={() => handleBlur('email')}
           />
-          {emailError && <div style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px' }}>⚠️ {emailError}</div>}
+          {emailError && <div className="auth-field-error-text">⚠️ {emailError}</div>}
         </div>
 
         <div className="form-group">
@@ -166,13 +165,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
           <input
             type="password"
             className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-            style={passwordError ? { borderColor: '#ef4444' } : {}}
             placeholder="Enter password (min 6 chars, letters, numbers, & !@#$)"
             value={password}
             onChange={handlePasswordChange}
             onBlur={() => handleBlur('password')}
           />
-          {passwordError && <div style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '4px' }}>⚠️ {passwordError}</div>}
+          {passwordError && <div className="auth-field-error-text">⚠️ {passwordError}</div>}
         </div>
 
         <button

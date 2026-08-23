@@ -1,6 +1,7 @@
 import React from 'react';
 import { Task } from '../types';
 import { CommentSection } from './CommentSection';
+import '../styles/TaskItem.css';
 
 interface TaskItemProps {
   task: Task;
@@ -64,12 +65,16 @@ export const TaskItem: React.FC<TaskItemProps> = ({
             <span className={`task-title-text ${task.done ? 'done' : ''}`}>
               {task.title}
             </span>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '0.75rem', color: '#94a3b8', alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', padding: '2px 8px', borderRadius: '6px', fontWeight: 600 }}>
+            <div className="task-meta-info">
+              <span className="task-author-badge">
                 👤 {displayAuthor}
               </span>
               {startDateStr && <span>📅 Added: {startDateStr}</span>}
-              {dueDateStr && <span style={{ color: task.done ? '#94a3b8' : '#f97316', fontWeight: 600 }}>⏰ Due: {dueDateStr}</span>}
+              {dueDateStr && (
+                <span className={task.done ? 'task-due-date-done' : 'task-due-date'}>
+                  ⏰ Due: {dueDateStr}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -83,8 +88,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
           </button>
           {isCreator && (
             <button
-              className="btn btn-danger"
-              style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+              className="btn btn-danger task-delete-btn"
               onClick={() => onDeleteTask(task.id)}
             >
               Delete

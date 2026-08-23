@@ -1,0 +1,11 @@
+/* Component-Specific CSS: CommentSection */
+.comment-submit-btn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.comment-error-text {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}

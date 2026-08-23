@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Comment } from '../types';
+import '../styles/CommentSection.css';
 
 interface CommentSectionProps {
   taskId: string;
@@ -55,13 +56,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ taskId, comments
         />
         <button
           type="submit"
-          className="btn btn-secondary"
-          style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+          className="btn btn-secondary comment-submit-btn"
         >
           Post
         </button>
       </form>
-      {error && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px' }}>⚠️ {error}</div>}
+      {error && <div className="comment-error-text">⚠️ {error}</div>}
     </div>
   );
 };

@@ -1,5 +1,4 @@
 :root {
-  /* Pitch-Black Core Palette Tokens */
   --background: #050505;
   --background-secondary: #080808;
 
@@ -14,20 +13,17 @@
   --text-secondary: #A1A1AA;
   --text-muted: #71717A;
 
-  /* Accents & Functional Colors */
-  --primary: #8B5CF6;             /* Electric Violet */
+  --primary: #8B5CF6;
   --primary-hover: #A78BFA;
   --primary-glow: rgba(139, 92, 246, 0.15);
 
-  --secondary-accent: #22D3EE;     /* Subtle Cyan */
-  --success: #34D399;              /* Mint Success */
-  --warning: #FBBF24;              /* Amber Warning */
-  --danger: #FB7185;               /* Coral Destructive */
+  --secondary-accent: #22D3EE;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --danger: #FB7185;
 
-  /* Input Background */
   --input-bg: #0B0B0D;
 
-  /* Radii & Timing */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 14px;
@@ -70,7 +66,6 @@ body {
   max-width: 720px;
 }
 
-/* Application Container Shell */
 .app-container {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -85,7 +80,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Header & Brand Navigation */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -151,7 +145,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Button Component System */
 .btn {
   padding: 10px 18px;
   border-radius: var(--radius-md);
@@ -205,7 +198,6 @@ body {
   border-color: var(--danger);
 }
 
-/* Auth Navigation Segmented Tabs */
 .auth-tabs {
   display: flex;
   gap: 6px;
@@ -251,7 +243,6 @@ body {
   box-shadow: 0 0 10px var(--primary);
 }
 
-/* Form Controls & Pitch Black Inputs */
 .form-group {
   margin-bottom: 20px;
 }
@@ -291,7 +282,6 @@ body {
   border-color: var(--danger) !important;
 }
 
-/* Banner Notifications */
 .alert-error {
   background: rgba(251, 113, 133, 0.1);
   border: 1px solid rgba(251, 113, 133, 0.25);
@@ -318,7 +308,6 @@ body {
   gap: 10px;
 }
 
-/* Statistics Bar */
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -353,7 +342,6 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* Segmented Filter Control */
 .filter-bar {
   display: flex;
   gap: 8px;
@@ -384,7 +372,6 @@ body {
   box-shadow: 0 4px 12px var(--primary-glow);
 }
 
-/* Task Form & List */
 .task-form {
   display: flex;
   gap: 12px;
@@ -397,7 +384,6 @@ body {
   gap: 14px;
 }
 
-/* Task Cards */
 .task-item {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -432,7 +418,6 @@ body {
   gap: 14px;
 }
 
-/* Circular Checklist Control */
 .custom-checkbox {
   width: 22px;
   height: 22px;
@@ -497,7 +482,6 @@ body {
   border-color: var(--primary);
 }
 
-/* Comments Section Thread */
 .comments-section {
   margin-top: 16px;
   padding-top: 14px;

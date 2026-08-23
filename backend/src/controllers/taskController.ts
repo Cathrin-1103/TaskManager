@@ -162,7 +162,6 @@ export const likeTask = async (req: AuthenticatedRequest, res: Response): Promis
 
     if (!task.likes) task.likes = [];
 
-    // Idempotent like
     if (!task.likes.includes(userId)) {
       task.likes.push(userId);
       await task.save();

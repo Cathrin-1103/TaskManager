@@ -78,7 +78,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     { expiresIn: config.refreshTokenExpiry as any }
   );
 
-  // Atomic push and slice to prevent VersionError race conditions
   await User.findByIdAndUpdate(user._id, {
     $push: {
       refreshTokens: {

@@ -79,6 +79,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
       const data = await parseJsonResponse(response);
 
       if (!response.ok) {
+        if (response.status === 401 && isLoginMode) {
+          throw new Error(data.message || 'Invalid email or password. Password for alex@taskmanager.com is Password123!');
+        }
         throw new Error(data.message || 'Authentication failed');
       }
 
@@ -133,6 +136,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
           Register
         </button>
       </div>
+
+      {isLoginMode && (
+        <div className="demo-credentials-badge">
+          💡 <strong>Demo Admin:</strong> <code>alex@taskmanager.com</code> | <code>Password123!</code>
+        </div>
+      )}
 
       {formError && <div className="alert-error">⚠️ {formError}</div>}
       {message && <div className="alert-success">✓ {message}</div>}

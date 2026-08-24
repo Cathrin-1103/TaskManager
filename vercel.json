@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/auth/:path*",
-      "destination": "/api"
+      "destination": "/api/auth/:path*"
     },
     {
       "source": "/tasks/:path*",
-      "destination": "/api"
+      "destination": "/api/tasks/:path*"
     },
     {
       "source": "/admin/:path*",
-      "destination": "/api"
+      "destination": "/api/admin/:path*"
     },
     {
       "source": "/api-status",
-      "destination": "/api"
+      "destination": "/api/api-status"
     }
   ]
 }

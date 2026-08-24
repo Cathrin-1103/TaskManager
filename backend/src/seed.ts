@@ -40,12 +40,9 @@ export async function seedDatabase() {
     });
     await sarah.save();
 
-    console.log("Creating technical project tasks...");
+    console.log("Creating new small sample tasks...");
 
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
     const nextWeek = new Date(today);
     nextWeek.setDate(today.getDate() + 7);
 
@@ -54,60 +51,28 @@ export async function seedDatabase() {
       userId: alex._id.toString(),
       authorEmail: alex.email,
       authorUsername: alex.username,
-      title: "Fix broken login button",
-      done: true,
+      title: "Complete workspace setup",
+      done: false,
       priority: "high",
-      dueDate: tomorrow,
-      likes: [alex._id.toString(), sarah._id.toString()],
-      comments: [
-        {
-          id: "101",
-          userId: sarah._id.toString(),
-          userEmail: sarah.email,
-          username: sarah.username,
-          text: "Tested login works smoothly now!",
-          createdAt: new Date(Date.now() - 3600000 * 2),
-        },
-      ],
+      dueDate: nextWeek,
+      likes: [],
+      comments: [],
     });
     await task1.save();
 
     const task2 = new TaskModel({
       _id: 2,
-      userId: alex._id.toString(),
-      authorEmail: alex.email,
-      authorUsername: alex.username,
-      title: "Update API endpoints",
-      done: false,
-      priority: "medium",
-      dueDate: nextWeek,
-      likes: [sarah._id.toString()],
-      comments: [
-        {
-          id: "102",
-          userId: alex._id.toString(),
-          userEmail: alex.email,
-          username: alex.username,
-          text: "Integrate middleware.",
-          createdAt: new Date(Date.now() - 1800000),
-        },
-      ],
-    });
-    await task2.save();
-
-    const task3 = new TaskModel({
-      _id: 3,
       userId: sarah._id.toString(),
       authorEmail: sarah.email,
       authorUsername: sarah.username,
-      title: "Set up CI/CD pipeline",
-      done: false,
-      priority: "low",
+      title: "Review team tasks",
+      done: true,
+      priority: "medium",
       dueDate: nextWeek,
-      likes: [alex._id.toString()],
+      likes: [],
       comments: [],
     });
-    await task3.save();
+    await task2.save();
 
     console.log("✅ Database seeded successfully!");
     console.log("-----------------------------------------");

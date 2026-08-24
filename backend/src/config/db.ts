@@ -71,6 +71,9 @@ async function ensureDefaultUsers(): Promise<void> {
 
 export const connectDB = async (): Promise<void> => {
   try {
+    if (mongoose.connection.readyState === 1) {
+      return;
+    }
     const conn = await mongoose.connect(config.mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     await migrateCollectionToNumericIds("users");
@@ -78,6 +81,8 @@ export const connectDB = async (): Promise<void> => {
     await ensureDefaultUsers();
   } catch (error) {
     console.error(`MongoDB connection error: ${error}`);
-    process.exit(1);
+    if (process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
   }
 };

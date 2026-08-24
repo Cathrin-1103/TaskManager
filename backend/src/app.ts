@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -42,6 +42,16 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(globalLimiter);
 
+// Strip /api prefix if present (e.g. from Vercel rewrites or direct /api calls)
+app.use((req: Request, _res: Response, next: NextFunction): void => {
+  if (req.url.startsWith("/api/")) {
+    req.url = req.url.slice(4);
+  } else if (req.url === "/api") {
+    req.url = "/";
+  }
+  next();
+});
+
 setupSwagger(app);
 
 app.use("/auth", authRoutes);
@@ -60,7 +70,14 @@ if (fs.existsSync(frontendDistPath)) {
 }
 
 app.use((req: Request, res: Response): void => {
-  if (req.path.startsWith("/auth") || req.path.startsWith("/tasks") || req.path.startsWith("/admin")) {
+  if (
+    req.path.startsWith("/auth") ||
+    req.path.startsWith("/tasks") ||
+    req.path.startsWith("/admin") ||
+    req.path === "/api-status" ||
+    req.xhr ||
+    req.headers.accept?.includes("application/json")
+  ) {
     res.status(404).json({ message: `API endpoint ${req.method} ${req.path} not found` });
     return;
   }
@@ -68,7 +85,7 @@ app.use((req: Request, res: Response): void => {
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    res.status(404).json({ message: "Endpoint not found" });
+    res.status(404).json({ message: `API endpoint ${req.method} ${req.path} not found` });
   }
 });
 

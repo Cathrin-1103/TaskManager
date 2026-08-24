@@ -56,30 +56,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, token, onClose }
     }
   }, [isOpen]);
 
-  const handleRoleToggle = async (user: User) => {
-    const newRole = user.role === 'admin' ? 'user' : 'admin';
-    try {
-      const res = await fetch(`${API_BASE_URL}/admin/users/${user.id}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({ role: newRole }),
-      });
-      const data = await parseJsonResponse(res);
-      if (!res.ok) throw new Error(data.message || 'Failed to update role');
-
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, role: newRole } : u))
-      );
-      toast.success(`User ${user.username} role updated to ${newRole}`);
-    } catch (err: any) {
-      toast.error(err.message || 'Error updating user role');
-    }
-  };
-
   const handleDeleteUser = async (user: User) => {
     if (!window.confirm(`Are you sure you want to delete user ${user.username} and all their tasks?`)) {
       return;
@@ -175,20 +151,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, token, onClose }
                         </td>
                         <td>{u.taskCount || 0} tasks</td>
                         <td>
-                          <div style={{ display: 'flex', gap: '6px' }}>
-                            <button
-                              className="btn btn-secondary btn-sm"
-                              onClick={() => handleRoleToggle(u)}
-                            >
-                              Toggle Role
-                            </button>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => handleDeleteUser(u)}
-                            >
-                              Delete
-                            </button>
-                          </div>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleDeleteUser(u)}
+                          >
+                            Delete
+                          </button>
                         </td>
                       </tr>
                     ))}

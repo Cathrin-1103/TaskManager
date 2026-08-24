@@ -13,9 +13,18 @@ import { errorHandler } from "./middleware/errorMiddleware";
 import path from "path";
 import fs from "fs";
 
+import mongoose from "mongoose";
+
 const app = express();
 
 connectDB();
+
+app.use(async (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
+  if (mongoose.connection.readyState !== 1) {
+    await connectDB().catch(() => {});
+  }
+  next();
+});
 
 app.use(
   helmet({

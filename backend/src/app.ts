@@ -11,6 +11,7 @@ import { setupSwagger } from "./config/swagger";
 import { globalLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorMiddleware";
 import path from "path";
+import fs from "fs";
 
 const app = express();
 
@@ -49,23 +50,26 @@ app.use("/", authRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/admin", adminRoutes);
 
-const frontendDistPath = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(frontendDistPath));
-
 app.get("/api-status", (_req: Request, res: Response): void => {
-  res.send("Task API is running!");
+  res.json({ status: "ok", message: "Task API is running!" });
 });
 
-app.get("*", (req: Request, res: Response): void => {
+const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+}
+
+app.use((req: Request, res: Response): void => {
   if (req.path.startsWith("/auth") || req.path.startsWith("/tasks") || req.path.startsWith("/admin")) {
-    res.status(404).json({ message: "API endpoint not found" });
+    res.status(404).json({ message: `API endpoint ${req.method} ${req.path} not found` });
     return;
   }
-  res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
-    if (err) {
-      res.send("Task API is running!");
-    }
-  });
+  const indexPath = path.join(frontendDistPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ message: "Endpoint not found" });
+  }
 });
 
 app.use(errorHandler);

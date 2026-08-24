@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validation';
+import { parseJsonResponse } from '../utils/api';
 import { API_BASE_URL } from '../config';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import '../styles/AuthForm.css';
@@ -75,7 +76,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
         body: JSON.stringify(bodyPayload),
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');

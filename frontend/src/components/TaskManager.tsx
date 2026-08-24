@@ -9,6 +9,7 @@ import { TaskItem } from './TaskItem';
 import { ConfirmModal } from './ConfirmModal';
 import { AdminPanel } from './AdminPanel';
 import { validateTaskTitle } from '../utils/validation';
+import { parseJsonResponse } from '../utils/api';
 import { API_BASE_URL } from '../config';
 import '../styles/TaskManager.css';
 
@@ -68,7 +69,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       setError('');
       const queryParam = searchQuery.trim() ? `?search=${encodeURIComponent(searchQuery.trim())}` : '';
       const res = await fetchAuth(`/tasks${queryParam}`);
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to fetch tasks');
       
       const taskList: Task[] = Array.isArray(data)
@@ -113,7 +114,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
           priority: newPriority,
         }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to create task');
 
       setNewTitle('');
@@ -135,7 +136,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
         body: JSON.stringify({ done: !task.done }),
       });
       if (!res.ok) {
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         throw new Error(data.message || 'Failed to update task');
       }
       setTasks((prev) =>
@@ -153,7 +154,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
         method: 'PUT',
         body: JSON.stringify(updates),
       });
-      const updatedTask = await res.json();
+      const updatedTask = await parseJsonResponse(res);
       if (!res.ok) throw new Error(updatedTask.message || 'Failed to update task');
 
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
@@ -174,7 +175,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
     const method = isLiked ? 'DELETE' : 'POST';
     try {
       const res = await fetchAuth(`/tasks/${task.id}/like`, { method });
-      const updatedTask = await res.json();
+      const updatedTask = await parseJsonResponse(res);
       if (!res.ok) throw new Error(updatedTask.message || 'Failed to update like');
       setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
     } catch (err: any) {
@@ -191,7 +192,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
         method: 'POST',
         body: JSON.stringify({ text: text.trim() }),
       });
-      const updatedTask = await res.json();
+      const updatedTask = await parseJsonResponse(res);
       if (!res.ok) throw new Error(updatedTask.message || 'Failed to add comment');
 
       setTasks((prev) => prev.map((t) => (t.id === taskId ? updatedTask : t)));
@@ -208,7 +209,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
         method: 'DELETE',
       });
       if (!res.ok) {
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         throw new Error(data.message || 'Failed to delete task');
       }
       setTasks((prev) => prev.filter((t) => t.id !== deletingTaskId));

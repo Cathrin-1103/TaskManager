@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { User, AdminStats } from '../types';
+import { parseJsonResponse } from '../utils/api';
 import { API_BASE_URL } from '../config';
 import '../styles/AdminPanel.css';
 
@@ -36,8 +37,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, token, onClose }
         throw new Error('Failed to load admin metrics or users');
       }
 
-      const statsData = await statsRes.json();
-      const usersData = await usersRes.json();
+      const statsData = await parseJsonResponse(statsRes);
+      const usersData = await parseJsonResponse(usersRes);
 
       setStats(statsData);
       setUsers(usersData);
@@ -67,7 +68,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, token, onClose }
         credentials: 'include',
         body: JSON.stringify({ role: newRole }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to update role');
 
       setUsers((prev) =>
@@ -92,7 +93,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, token, onClose }
         },
         credentials: 'include',
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to delete user');
 
       setUsers((prev) => prev.filter((u) => u.id !== user.id));

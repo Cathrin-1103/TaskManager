@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { parseJsonResponse } from '../utils/api';
 import { API_BASE_URL } from '../config';
 
 interface ForgotPasswordModalProps {
@@ -36,7 +37,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to request reset');
 
       if (data.resetToken) {
@@ -70,7 +71,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: resetToken.trim(), newPassword }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data.message || 'Failed to reset password');
 
       toast.success('Password reset successful! You can now log in.');

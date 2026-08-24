@@ -5,6 +5,8 @@ import { AuthForm } from '../components/AuthForm';
 import { TaskManager } from '../components/TaskManager';
 import { API_BASE_URL } from '../config';
 
+import { parseJsonResponse } from '../utils/api';
+
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export default function Home() {
       },
       credentials: 'include',
     })
-      .then((res) => (res.ok ? res.json() : null))
+      .then(async (res) => (res.ok ? await parseJsonResponse(res) : null))
       .then((data) => {
         if (data) {
           setUserEmail(data.email);

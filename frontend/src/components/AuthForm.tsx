@@ -79,10 +79,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
       const data = await parseJsonResponse(response);
 
       if (!response.ok) {
+        const extractedError =
+          data?.message ||
+          data?.error ||
+          data?.msg ||
+          data?.detail ||
+          (typeof data === 'string' ? data : '');
+
         if (response.status === 401 && isLoginMode) {
-          throw new Error(data.message || 'Invalid email or password. Password for alex@taskmanager.com is Password123!');
+          throw new Error(extractedError || 'Invalid email or password. Password for alex@taskmanager.com is Password123!');
         }
-        throw new Error(data.message || 'Authentication failed');
+        if (response.status === 429) {
+          throw new Error('Too many login attempts. Please wait a few minutes before trying again.');
+        }
+        throw new Error(extractedError || `Authentication failed (Status ${response.status})`);
       }
 
       if (isLoginMode) {

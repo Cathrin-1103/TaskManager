@@ -1,4 +1,5 @@
 import request from 'supertest';
+import bcrypt from 'bcryptjs';
 import app from '../src/app';
 import { User } from '../src/models/User';
 import { connectTestDB, disconnectTestDB } from './helpers';
@@ -169,15 +170,8 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout, /auth/forgo
       expect(newLogin.status).toBe(200);
 
       // Revert password
-      await request(app)
-        .post('/auth/forgot-password')
-        .send({ email: testUser.email });
-      const dbUser = await User.findOne({ email: testUser.email });
-      if (dbUser?.resetPasswordToken) {
-        await request(app)
-          .post('/auth/reset-password')
-          .send({ token: dbUser.resetPasswordToken, newPassword: testUser.password });
-      }
+      const passwordHash = await bcrypt.hash(testUser.password, 10);
+      await User.updateOne({ email: testUser.email }, { passwordHash, resetPasswordToken: undefined, resetPasswordExpires: undefined });
     });
   });
 

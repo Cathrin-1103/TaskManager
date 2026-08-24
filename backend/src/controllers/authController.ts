@@ -219,26 +219,26 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
 
   const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
 
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.ethereal.email",
-      port: Number(process.env.SMTP_PORT) || 587,
-      auth: {
-        user: process.env.SMTP_USER || "test@example.com",
-        pass: process.env.SMTP_PASS || "password",
-      },
-    });
+  if (process.env.NODE_ENV !== "test" && process.env.SMTP_HOST) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        auth: {
+          user: process.env.SMTP_USER || "test@example.com",
+          pass: process.env.SMTP_PASS || "password",
+        },
+      });
 
-    await transporter.sendMail({
-      from: '"Task Workspace" <no-reply@taskworkspace.com>',
-      to: user.email,
-      subject: "Password Reset Request",
-      text: `You requested a password reset. Click this link or enter token to reset your password: ${resetUrl}\nToken: ${resetToken}`,
-      html: `<p>You requested a password reset for Task Workspace.</p><p><a href="${resetUrl}">Click here to reset your password</a></p><p>Reset Token: <code>${resetToken}</code></p>`,
-    }).catch(() => {
-      console.log(`[Password Reset Token Logged for Dev]: User ${user.email} Token: ${resetToken}`);
-    });
-  } catch (_e) {}
+      await transporter.sendMail({
+        from: '"Task Workspace" <no-reply@taskworkspace.com>',
+        to: user.email,
+        subject: "Password Reset Request",
+        text: `You requested a password reset. Click this link or enter token to reset your password: ${resetUrl}\nToken: ${resetToken}`,
+        html: `<p>You requested a password reset for Task Workspace.</p><p><a href="${resetUrl}">Click here to reset your password</a></p><p>Reset Token: <code>${resetToken}</code></p>`,
+      });
+    } catch (_e) {}
+  }
 
   res.status(200).json({
     message: "If that email is registered, a password reset link has been sent.",

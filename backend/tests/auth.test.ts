@@ -3,7 +3,7 @@ import app from '../src/app';
 import { User } from '../src/models/User';
 import { connectTestDB, disconnectTestDB } from './helpers';
 
-describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
+describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout, /auth/forgot-password)', () => {
   const timestamp = Date.now();
   const testUser = {
     username: 'test_user',
@@ -67,7 +67,7 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
   });
 
   describe('POST /auth/login', () => {
-    it('should authenticate user via email & password (without needing username on login) and return token', async () => {
+    it('should authenticate user, set HTTP-Only cookies, and return token', async () => {
       const res = await request(app)
         .post('/auth/login')
         .send({ email: testUser.email, password: testUser.password });
@@ -76,6 +76,7 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
       expect(res.body).toHaveProperty('token');
       expect(res.body).toHaveProperty('refreshToken');
       expect(res.body).toHaveProperty('username', 'test_user');
+      expect(res.headers['set-cookie']).toBeDefined();
     });
 
     it('should cap refreshTokens array at maximum 5 tokens', async () => {
@@ -121,6 +122,62 @@ describe('Auth Endpoints (/auth/register, /auth/login, /auth/logout)', () => {
 
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty('message', 'Invalid email or password');
+    });
+  });
+
+  describe('GET /auth/me', () => {
+    it('should return current authenticated user profile', async () => {
+      const loginRes = await request(app)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: testUser.password });
+
+      const token = loginRes.body.token;
+
+      const res = await request(app)
+        .get('/auth/me')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe(testUser.email);
+      expect(res.body.username).toBe(testUser.username);
+    });
+  });
+
+  describe('POST /auth/forgot-password & /auth/reset-password', () => {
+    it('should generate reset token and allow resetting password', async () => {
+      const forgotRes = await request(app)
+        .post('/auth/forgot-password')
+        .send({ email: testUser.email });
+
+      expect(forgotRes.status).toBe(200);
+      const resetToken = forgotRes.body.resetToken;
+      expect(resetToken).toBeDefined();
+
+      const newPassword = 'NewPassword123!';
+      const resetRes = await request(app)
+        .post('/auth/reset-password')
+        .send({ token: resetToken, newPassword });
+
+      expect(resetRes.status).toBe(200);
+      expect(resetRes.body.message).toContain('Password has been reset successfully');
+
+      // Verify login works with new password
+      const newLogin = await request(app)
+        .post('/auth/login')
+        .send({ email: testUser.email, password: newPassword });
+
+      expect(newLogin.status).toBe(200);
+
+      // Revert password
+      await request(app)
+        .post('/auth/forgot-password')
+        .send({ email: testUser.email });
+      const dbUser = await User.findOne({ email: testUser.email });
+      if (dbUser?.resetPasswordToken) {
+        await request(app)
+          .post('/auth/reset-password')
+          .send({ token: dbUser.resetPasswordToken, newPassword: testUser.password });
+      }
     });
   });
 

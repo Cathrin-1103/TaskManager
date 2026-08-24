@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validation';
 import { API_BASE_URL } from '../config';
+import { ForgotPasswordModal } from './ForgotPasswordModal';
 import '../styles/AuthForm.css';
 
 interface AuthFormProps {
-  onLoginSuccess: (token: string, email: string, username?: string, userId?: string) => void;
+  onLoginSuccess: (token: string, email: string, username?: string, userId?: string, role?: string) => void;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
@@ -12,6 +13,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [showForgotModal, setShowForgotModal] = useState<boolean>(false);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [formError, setFormError] = useState<string>('');
@@ -67,6 +69,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(bodyPayload),
       });
 
@@ -79,7 +82,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
       if (isLoginMode) {
         const token = data.token || data.accessToken;
         if (token) {
-          onLoginSuccess(token, email.trim(), data.username, data.userId);
+          onLoginSuccess(token, email.trim(), data.username, data.userId, data.role);
         } else {
           setFormError('No token returned from server');
         }
@@ -99,6 +102,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
 
   return (
     <div>
+      <ForgotPasswordModal isOpen={showForgotModal} onClose={() => setShowForgotModal(false)} />
+
       <div className="auth-tabs">
         <button
           className={`auth-tab ${isLoginMode ? 'active' : ''}`}
@@ -159,7 +164,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
         </div>
 
         <div className="form-group">
-          <label>Password</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label>Password</label>
+            {isLoginMode && (
+              <button
+                type="button"
+                className="btn-link"
+                style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: '0.8rem', cursor: 'pointer' }}
+                onClick={() => setShowForgotModal(true)}
+              >
+                Forgot Password?
+              </button>
+            )}
+          </div>
           <input
             type="password"
             className={`form-control ${passwordError ? 'is-invalid' : ''}`}

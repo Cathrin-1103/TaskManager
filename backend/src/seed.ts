@@ -27,6 +27,7 @@ export async function seedDatabase() {
       username: "alex",
       email: "alex@taskmanager.com",
       passwordHash,
+      role: "admin",
     });
     await alex.save();
 
@@ -35,6 +36,7 @@ export async function seedDatabase() {
       username: "sarah",
       email: "sarah@taskmanager.com",
       passwordHash,
+      role: "user",
     });
     await sarah.save();
 
@@ -54,6 +56,7 @@ export async function seedDatabase() {
       authorUsername: alex.username,
       title: "Fix broken login button",
       done: true,
+      priority: "high",
       dueDate: tomorrow,
       likes: [alex._id.toString(), sarah._id.toString()],
       comments: [
@@ -76,6 +79,7 @@ export async function seedDatabase() {
       authorUsername: alex.username,
       title: "Update API endpoints",
       done: false,
+      priority: "medium",
       dueDate: nextWeek,
       likes: [sarah._id.toString()],
       comments: [
@@ -98,6 +102,7 @@ export async function seedDatabase() {
       authorUsername: sarah.username,
       title: "Set up CI/CD pipeline",
       done: false,
+      priority: "low",
       dueDate: nextWeek,
       likes: [alex._id.toString()],
       comments: [],

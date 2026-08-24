@@ -5,7 +5,10 @@ export interface IUser extends Document<number> {
   username: string;
   email: string;
   passwordHash: string;
+  role: "user" | "admin";
   refreshTokens: string[];
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
 }
 
 const userSchema = new Schema<IUser>(
@@ -29,9 +32,20 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     refreshTokens: {
       type: [String],
       default: [],
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
     },
   },
   {
@@ -42,6 +56,8 @@ const userSchema = new Schema<IUser>(
         delete ret._id;
         delete ret.__v;
         delete ret.passwordHash;
+        delete ret.resetPasswordToken;
+        delete ret.resetPasswordExpires;
         return ret;
       },
     },

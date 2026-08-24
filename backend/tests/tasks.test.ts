@@ -38,18 +38,19 @@ describe('Task Endpoints (/tasks)', () => {
   });
 
   describe('POST /tasks', () => {
-    it('should create a task with start date (createdAt) and due date (dueDate) for User A', async () => {
+    it('should create a task with start date (createdAt), due date (dueDate), and priority for User A', async () => {
       const dueDate = new Date('2026-12-31T23:59:59.000Z').toISOString();
 
       const res = await request(app)
         .post('/tasks')
         .set('Authorization', `Bearer ${tokenA}`)
-        .send({ title: 'Task for User A with Due Date', dueDate });
+        .send({ title: 'Task for User A with Due Date', dueDate, priority: 'high' });
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('id');
       expect(res.body.title).toBe('Task for User A with Due Date');
       expect(res.body.authorUsername).toBe('alex_test');
+      expect(res.body.priority).toBe('high');
       expect(res.body.dueDate).toBeDefined();
 
       createdTaskId = res.body.id;
@@ -66,7 +67,7 @@ describe('Task Endpoints (/tasks)', () => {
     });
   });
 
-  describe('GET /tasks & Shared Workspace Visibility', () => {
+  describe('GET /tasks & Search Filtering', () => {
     it('should return tasks for User A including the created task', async () => {
       const res = await request(app)
         .get('/tasks')
@@ -86,6 +87,15 @@ describe('Task Endpoints (/tasks)', () => {
       expect(res.body).toHaveProperty(createdTaskId);
       expect(res.body[createdTaskId].title).toBe('Task for User A with Due Date');
     });
+
+    it('should filter tasks by search query parameter', async () => {
+      const res = await request(app)
+        .get('/tasks?search=User%20A')
+        .set('Authorization', `Bearer ${tokenA}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty(createdTaskId);
+    });
   });
 
   describe('PUT /tasks/:id', () => {
@@ -99,14 +109,15 @@ describe('Task Endpoints (/tasks)', () => {
       expect(res.body).toHaveProperty('message', 'You are not authorized to modify this task');
     });
 
-    it('should update task status to done by User A (the task creator)', async () => {
+    it('should update task status to done and change priority by User A', async () => {
       const res = await request(app)
         .put(`/tasks/${createdTaskId}`)
         .set('Authorization', `Bearer ${tokenA}`)
-        .send({ done: true });
+        .send({ done: true, priority: 'low' });
 
       expect(res.status).toBe(200);
       expect(res.body.done).toBe(true);
+      expect(res.body.priority).toBe('low');
     });
   });
 

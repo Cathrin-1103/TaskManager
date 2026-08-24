@@ -4,6 +4,7 @@ export interface User {
   username: string;
   email: string;
   passwordHash: string;
+  role?: "user" | "admin";
   refreshTokens?: string[];
 }
 
@@ -25,6 +26,7 @@ export interface Task {
   authorUsername?: string;
   title: string;
   done: boolean;
+  priority?: "low" | "medium" | "high";
   startDate?: string | Date;
   dueDate?: string | Date;
   createdAt?: string | Date;
@@ -38,6 +40,7 @@ export interface AuthPayload {
   id: string;
   email: string;
   username: string;
+  role?: "user" | "admin";
 }
 
 export interface AuthenticatedRequest extends Request {

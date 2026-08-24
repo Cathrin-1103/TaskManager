@@ -16,6 +16,7 @@ export interface ITask extends Document<number> {
   authorUsername?: string;
   title: string;
   done: boolean;
+  priority: "low" | "medium" | "high";
   dueDate?: Date;
   likes: string[];
   comments: IComment[];
@@ -59,6 +60,11 @@ const taskSchema = new Schema<ITask>(
     done: {
       type: Boolean,
       default: false,
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "medium",
     },
     dueDate: {
       type: Date,

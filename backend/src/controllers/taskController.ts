@@ -2,9 +2,22 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../types";
 import { TaskModel } from "../models/Task";
 
-export const getTasks = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const getTasks = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const tasks = await TaskModel.find().sort({ createdAt: -1 });
+    const { search } = req.query;
+    let query = {};
+    if (search && typeof search === "string" && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query = {
+        $or: [
+          { title: searchRegex },
+          { authorUsername: searchRegex },
+          { "comments.text": searchRegex },
+        ],
+      };
+    }
+
+    const tasks = await TaskModel.find(query).sort({ createdAt: -1 });
     const tasksMap: Record<string, any> = {};
     tasks.forEach((task) => {
       const jsonTask: Record<string, any> = task.toJSON();
@@ -27,7 +40,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    let { title, dueDate } = req.body;
+    let { title, dueDate, priority } = req.body;
     if (!title || typeof title !== "string" || !title.trim()) {
       res.status(400).json({ message: "Title required" });
       return;
@@ -45,9 +58,12 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
       parsedDueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     }
 
+    const validPriority = priority && ["low", "medium", "high"].includes(priority) ? priority : "medium";
+
     const newTask = new TaskModel({
       title: title.trim(),
       done: false,
+      priority: validPriority,
       userId,
       authorEmail,
       authorUsername,
@@ -70,7 +86,7 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
     }
 
     const taskId = Number(req.params.id);
-    const { title, done, dueDate } = req.body;
+    const { title, done, dueDate, priority } = req.body;
     const task = await TaskModel.findById(taskId);
 
     if (!task) {
@@ -93,6 +109,12 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response): Prom
 
     if (done !== undefined) {
       task.done = Boolean(done);
+    }
+
+    if (priority !== undefined) {
+      if (["low", "medium", "high"].includes(priority)) {
+        task.priority = priority;
+      }
     }
 
     if (dueDate !== undefined) {

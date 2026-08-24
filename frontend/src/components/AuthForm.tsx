@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validation';
-import { parseJsonResponse } from '../utils/api';
+import { parseJsonResponse, sanitizeErrorMessage } from '../utils/api';
 import { API_BASE_URL } from '../config';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import '../styles/AuthForm.css';
@@ -97,7 +97,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLoginSuccess }) => {
         setTouched({});
       }
     } catch (err: any) {
-      setFormError(err.message || 'Something went wrong');
+      setFormError(sanitizeErrorMessage(err));
     } finally {
       setLoading(false);
     }

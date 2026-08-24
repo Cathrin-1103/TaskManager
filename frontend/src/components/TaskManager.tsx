@@ -9,7 +9,7 @@ import { TaskItem } from './TaskItem';
 import { ConfirmModal } from './ConfirmModal';
 import { AdminPanel } from './AdminPanel';
 import { validateTaskTitle } from '../utils/validation';
-import { parseJsonResponse } from '../utils/api';
+import { parseJsonResponse, sanitizeErrorMessage } from '../utils/api';
 import { API_BASE_URL } from '../config';
 import '../styles/TaskManager.css';
 
@@ -77,7 +77,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
         : Object.values(data);
       setTasks(taskList);
     } catch (err: any) {
-      setError(err.message || 'Error loading tasks');
+      setError(sanitizeErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -90,18 +90,9 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
     setTitleTouched(true);
-    setFormError('');
-
-    const tErr = validateTaskTitle(newTitle);
-    if (tErr) {
-      setFormError('Cannot submit task with validation errors.');
-      toast.error('Please fix validation errors');
-      return;
-    }
-
-    if (!newDueDate) {
-      setFormError('Please select a due date for the task.');
-      toast.error('Please select a due date');
+    const titleErr = validateTaskTitle(newTitle);
+    if (titleErr) {
+      setFormError(titleErr);
       return;
     }
 
@@ -124,8 +115,9 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       toast.success('Task created successfully! 🎉');
       loadTasks();
     } catch (err: any) {
-      setError(err.message || 'Error creating task');
-      toast.error(err.message || 'Error creating task');
+      const cleanMsg = sanitizeErrorMessage(err);
+      setError(cleanMsg);
+      toast.error(cleanMsg);
     }
   };
 
@@ -144,7 +136,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       );
       toast.info(task.done ? 'Task marked active' : 'Task marked complete! ✅');
     } catch (err: any) {
-      toast.error(err.message || 'Error updating task');
+      toast.error(sanitizeErrorMessage(err));
     }
   };
 
@@ -160,7 +152,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
       toast.success('Task updated successfully! ✏️');
     } catch (err: any) {
-      toast.error(err.message || 'Error updating task');
+      toast.error(sanitizeErrorMessage(err));
       throw err;
     }
   };
@@ -179,7 +171,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       if (!res.ok) throw new Error(updatedTask.message || 'Failed to update like');
       setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
     } catch (err: any) {
-      toast.error(err.message || 'Error updating like');
+      toast.error(sanitizeErrorMessage(err));
     }
   };
 
@@ -198,7 +190,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       setTasks((prev) => prev.map((t) => (t.id === taskId ? updatedTask : t)));
       toast.success('Comment added 💬');
     } catch (err: any) {
-      toast.error(err.message || 'Error adding comment');
+      toast.error(sanitizeErrorMessage(err));
     }
   };
 
@@ -215,7 +207,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ token, userEmail, user
       setTasks((prev) => prev.filter((t) => t.id !== deletingTaskId));
       toast.warn('Task deleted');
     } catch (err: any) {
-      toast.error(err.message || 'Error deleting task');
+      toast.error(sanitizeErrorMessage(err));
     } finally {
       setDeletingTaskId(null);
     }

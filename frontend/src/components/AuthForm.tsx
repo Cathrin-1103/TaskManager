@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validation';
 import { API_BASE_URL } from '../config';

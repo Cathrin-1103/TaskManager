@@ -1,20 +1,19 @@
-import { useState, useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { AuthForm } from './components/AuthForm';
-import { TaskManager } from './components/TaskManager';
-import { API_BASE_URL } from './config';
-import './index.css';
+'use client';
 
-export function App() {
+import { useState, useEffect } from 'react';
+import { AuthForm } from '../components/AuthForm';
+import { TaskManager } from '../components/TaskManager';
+import { API_BASE_URL } from '../config';
+
+export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<'user' | 'admin' | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Attempt session restore via httpOnly cookie first
     fetch(`${API_BASE_URL}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
@@ -45,10 +44,17 @@ export function App() {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleLoginSuccess = (newToken: string, loggedInEmail: string, loggedInUsername?: string, loggedInUserId?: string, loggedInRole?: string) => {
+  const handleLoginSuccess = (
+    newToken: string,
+    loggedInEmail: string,
+    loggedInUsername?: string,
+    loggedInUserId?: string,
+    loggedInRole?: string
+  ) => {
     const finalUsername = loggedInUsername || loggedInEmail.split('@')[0];
     const finalRole = (loggedInRole as 'user' | 'admin') || 'user';
 
@@ -87,30 +93,32 @@ export function App() {
     setRole(null);
   };
 
-  return (
-    <div className="app-container">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover />
-      {token && userEmail ? (
-        <TaskManager
-          token={token}
-          userEmail={userEmail}
-          username={username || userEmail.split('@')[0]}
-          userId={userId}
-          role={role || 'user'}
-          onLogout={handleLogout}
-        />
-      ) : (
-        <div>
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '8px' }}>
-              Task Workspace
-            </h1>
-          </div>
-          <AuthForm onLoginSuccess={handleLoginSuccess} />
-        </div>
-      )}
+  if (loading) {
+    return (
+      <div className="empty-state" style={{ marginTop: '100px' }}>
+        <div className="empty-icon">⏳</div>
+        <span>Initializing Next.js Task Workspace...</span>
+      </div>
+    );
+  }
+
+  return token && userEmail ? (
+    <TaskManager
+      token={token}
+      userEmail={userEmail}
+      username={username || userEmail.split('@')[0]}
+      userId={userId}
+      role={role || 'user'}
+      onLogout={handleLogout}
+    />
+  ) : (
+    <div>
+      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '8px' }}>
+          Task Workspace
+        </h1>
+      </div>
+      <AuthForm onLoginSuccess={handleLoginSuccess} />
     </div>
   );
 }
-
-export default App;

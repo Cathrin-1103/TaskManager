@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Comment } from '../types';
 import '../styles/CommentSection.css';

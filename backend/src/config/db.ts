@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import dns from "dns";
+import bcrypt from "bcryptjs";
+import { User } from "../models/User";
 import { config } from "./index";
 
 try {
@@ -37,12 +39,43 @@ async function migrateCollectionToNumericIds(collectionName: string): Promise<vo
   }
 }
 
+async function ensureDefaultUsers(): Promise<void> {
+  try {
+    const alex = await User.findOne({ email: "alex@taskmanager.com" });
+    if (!alex) {
+      const passwordHash = await bcrypt.hash("Password123!", 10);
+      await new User({
+        _id: 1,
+        username: "alex",
+        email: "alex@taskmanager.com",
+        passwordHash,
+        role: "admin",
+      }).save().catch(() => {});
+    }
+
+    const sarah = await User.findOne({ email: "sarah@taskmanager.com" });
+    if (!sarah) {
+      const passwordHash = await bcrypt.hash("Password123!", 10);
+      await new User({
+        _id: 2,
+        username: "sarah",
+        email: "sarah@taskmanager.com",
+        passwordHash,
+        role: "user",
+      }).save().catch(() => {});
+    }
+  } catch (err) {
+    console.error("Error ensuring default demo users:", err);
+  }
+}
+
 export const connectDB = async (): Promise<void> => {
   try {
     const conn = await mongoose.connect(config.mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     await migrateCollectionToNumericIds("users");
     await migrateCollectionToNumericIds("tasks");
+    await ensureDefaultUsers();
   } catch (error) {
     console.error(`MongoDB connection error: ${error}`);
     process.exit(1);

@@ -39,48 +39,152 @@
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+html, body {
+  width: 100%;
+  min-height: 100vh;
+}
+
 body {
   background:
     radial-gradient(
-      circle at 10% 10%,
-      rgba(99, 102, 241, 0.12),
-      transparent 35%
+      circle at 15% 15%,
+      rgba(99, 102, 241, 0.15),
+      transparent 40%
     ),
     radial-gradient(
-      circle at 90% 85%,
-      rgba(6, 182, 212, 0.1),
-      transparent 35%
+      circle at 85% 80%,
+      rgba(6, 182, 212, 0.12),
+      transparent 40%
     ),
     var(--background);
   color: var(--text-primary);
-  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: clamp(12px, 3vw, 32px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(12px, 3vw, 24px);
   overflow-x: hidden;
 }
 
 #root {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .app-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   background: var(--surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: clamp(16px, 4vw, 36px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  padding: clamp(16px, 3vw, 36px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
   animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Split Screen Auth Landing Page */
+.auth-split-wrapper {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(24px, 4vw, 48px);
+  min-height: calc(100vh - 80px);
+  align-items: center;
+  padding: 12px 0;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 9999px;
+  color: var(--primary-hover);
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 580px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.feature-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: var(--transition-normal);
+}
+
+.feature-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  background: var(--surface-hover);
+}
+
+.feature-icon {
+  font-size: 1.35rem;
+  padding: 8px;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-sm);
+  color: var(--primary-hover);
+}
+
+.feature-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.feature-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.auth-section {
+  width: 100%;
 }
 
 .app-header {
@@ -372,11 +476,6 @@ select.form-control {
   animation: slideUp 0.25s ease-out;
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .task-item:hover {
   border-color: var(--border-hover);
   transform: translateY(-2px);
@@ -484,7 +583,29 @@ select.form-control {
   opacity: 0.6;
 }
 
-/* Mobile Responsiveness */
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 992px) {
+  .auth-split-wrapper {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 16px 0;
+    gap: 32px;
+  }
+
+  .hero-section {
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+  }
+
+  .feature-grid {
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   body {
     padding: 8px;
@@ -493,6 +614,10 @@ select.form-control {
   .app-container {
     padding: 16px;
     border-radius: var(--radius-lg);
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
   }
 
   .app-header {

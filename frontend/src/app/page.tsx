@@ -112,13 +112,56 @@ export default function Home() {
       onLogout={handleLogout}
     />
   ) : (
-    <div>
-      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '8px' }}>
-          Task Workspace
+    <div className="auth-split-wrapper">
+      <div className="hero-section">
+        <div className="hero-badge">
+          🚀 Next.js Task Workspace Platform
+        </div>
+        <h1 className="hero-title">
+          Organize, Collaborate, and Execute Fast.
         </h1>
+        <p className="hero-subtitle">
+          Streamline your team&apos;s workflow with shared workspace collaboration, smart priority tracking, HTTP-only cookie security, and real-time task analytics.
+        </p>
+
+        <div className="feature-grid">
+          <div className="feature-card">
+            <span className="feature-icon">⚡</span>
+            <div>
+              <div className="feature-title">Shared Workspace</div>
+              <div className="feature-desc">Collaborate on tasks in real-time across your workspace.</div>
+            </div>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">🎯</span>
+            <div>
+              <div className="feature-title">Smart Priorities</div>
+              <div className="feature-desc">Categorize tasks by High 🔴, Medium 🟡, and Low 🟢 priorities.</div>
+            </div>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">🛡️</span>
+            <div>
+              <div className="feature-title">Security & Admin</div>
+              <div className="feature-desc">HTTP-Only cookies, CSP headers, rate limiting, and admin controls.</div>
+            </div>
+          </div>
+
+          <div className="feature-card">
+            <span className="feature-icon">💬</span>
+            <div>
+              <div className="feature-title">Comments & Likes</div>
+              <div className="feature-desc">Engage on tasks with idempotent likes and discussion threads.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <AuthForm onLoginSuccess={handleLoginSuccess} />
+
+      <div className="auth-section">
+        <AuthForm onLoginSuccess={handleLoginSuccess} />
+      </div>
     </div>
   );
 }
